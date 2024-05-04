@@ -32,6 +32,15 @@ public class MenuUIHandler : MonoBehaviour
 #endif
     }
 
+    public void Quit()
+    {
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
+        Application.Quit();
+#endif
+    }
+
     // Update is called once per frame
     void Update()
     {
