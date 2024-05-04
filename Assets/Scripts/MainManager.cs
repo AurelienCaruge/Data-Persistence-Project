@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class MainManager : MonoBehaviour
 {
+    public static MainManager Instance;
+    public PlayerPrefs Newname;
+
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
@@ -18,7 +22,8 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
+
+   
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +41,7 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
     }
 
     private void Update()
@@ -72,5 +78,37 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    [System.Serializable]
+    class SaveData
+    {
+        public PlayerPrefs Newname;
+    }
+
+    public void SaveName()
+    {
+        SaveData data = new SaveData();
+        data.Newname = Newname;
+
+        string dir = Application.persistentDataPath + "/Saves";
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+    }
+
+    public void LoadName()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            Newname = data.Newname;
+        }
     }
 }
